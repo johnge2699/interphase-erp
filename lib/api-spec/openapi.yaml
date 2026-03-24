@@ -1,0 +1,918 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Interphase Engineers - Project Control & Margin Tracking API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: projects
+    description: Project management
+  - name: estimates
+    description: BOQ estimate entries
+  - name: consumption
+    description: Weekly consumption tracking
+  - name: reports
+    description: Reports and analytics
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /projects:
+    get:
+      operationId: listProjects
+      tags: [projects]
+      summary: List all projects
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+    post:
+      operationId: createProject
+      tags: [projects]
+      summary: Create a new project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+      responses:
+        "201":
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /projects/{id}:
+    get:
+      operationId: getProject
+      tags: [projects]
+      summary: Get project by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateProject
+      tags: [projects]
+      summary: Update a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+      responses:
+        "200":
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteProject
+      tags: [projects]
+      summary: Delete a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /projects/{id}/summary:
+    get:
+      operationId: getProjectSummary
+      tags: [projects]
+      summary: Get project financial summary
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Project summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectSummary"
+
+  /estimates:
+    get:
+      operationId: listEstimates
+      tags: [estimates]
+      summary: List estimate rows for a project
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Estimate rows
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EstimateRow"
+    post:
+      operationId: createEstimateRow
+      tags: [estimates]
+      summary: Create estimate row
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEstimateRowRequest"
+      responses:
+        "201":
+          description: Estimate row created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstimateRow"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /estimates/{id}:
+    put:
+      operationId: updateEstimateRow
+      tags: [estimates]
+      summary: Update estimate row
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEstimateRowRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstimateRow"
+    delete:
+      operationId: deleteEstimateRow
+      tags: [estimates]
+      summary: Delete estimate row
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /consumption:
+    get:
+      operationId: listConsumption
+      tags: [consumption]
+      summary: List weekly consumption entries
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: weekNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Consumption entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConsumptionEntry"
+    post:
+      operationId: createConsumptionEntry
+      tags: [consumption]
+      summary: Create consumption entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateConsumptionEntryRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsumptionEntry"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /consumption/{id}:
+    put:
+      operationId: updateConsumptionEntry
+      tags: [consumption]
+      summary: Update consumption entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateConsumptionEntryRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsumptionEntry"
+    delete:
+      operationId: deleteConsumptionEntry
+      tags: [consumption]
+      summary: Delete consumption entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /reports/margin:
+    get:
+      operationId: getMarginReport
+      tags: [reports]
+      summary: Get margin analysis report for a project
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Margin report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarginReport"
+
+  /reports/weekly-trend:
+    get:
+      operationId: getWeeklyTrend
+      tags: [reports]
+      summary: Get weekly consumption trend data
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Weekly trend data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeeklyTrendPoint"
+
+  /reports/category-breakdown:
+    get:
+      operationId: getCategoryBreakdown
+      tags: [reports]
+      summary: Cost breakdown by category
+      parameters:
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Category breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryBreakdownItem"
+
+  /reports/dashboard-summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [reports]
+      summary: Get overall dashboard summary across all projects
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectName:
+          type: string
+        clientName:
+          type: string
+        projectType:
+          type: string
+          enum: [electrical, civil, mechanical, plumbing, hvac, other]
+        location:
+          type: string
+        projectValue:
+          type: number
+          format: double
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        area:
+          type: number
+          format: double
+        teamEngineer:
+          type: string
+        status:
+          type: string
+          enum: [planning, active, on_hold, completed, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - projectName
+        - clientName
+        - projectType
+        - location
+        - projectValue
+        - startDate
+        - endDate
+        - status
+        - createdAt
+        - updatedAt
+
+    CreateProjectRequest:
+      type: object
+      properties:
+        projectName:
+          type: string
+          minLength: 1
+        clientName:
+          type: string
+          minLength: 1
+        projectType:
+          type: string
+          enum: [electrical, civil, mechanical, plumbing, hvac, other]
+        location:
+          type: string
+        projectValue:
+          type: number
+          format: double
+          minimum: 0
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        area:
+          type: number
+          format: double
+        teamEngineer:
+          type: string
+        status:
+          type: string
+          enum: [planning, active, on_hold, completed, cancelled]
+      required:
+        - projectName
+        - clientName
+        - projectType
+        - location
+        - projectValue
+        - startDate
+        - endDate
+        - status
+
+    ProjectSummary:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        projectName:
+          type: string
+        projectValue:
+          type: number
+          format: double
+        estimatedCost:
+          type: number
+          format: double
+        actualCost:
+          type: number
+          format: double
+        grossMargin:
+          type: number
+          format: double
+        marginPercent:
+          type: number
+          format: double
+        materialVariance:
+          type: number
+          format: double
+        labourVariance:
+          type: number
+          format: double
+        burnRate:
+          type: number
+          format: double
+        forecastAtCompletion:
+          type: number
+          format: double
+      required:
+        - projectId
+        - projectName
+        - projectValue
+        - estimatedCost
+        - actualCost
+        - grossMargin
+        - marginPercent
+        - materialVariance
+        - labourVariance
+        - burnRate
+        - forecastAtCompletion
+
+    EstimateRow:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        itemCategory:
+          type: string
+        itemName:
+          type: string
+        specification:
+          type: string
+        unit:
+          type: string
+        estimatedQuantity:
+          type: number
+          format: double
+        rate:
+          type: number
+          format: double
+        cost:
+          type: number
+          format: double
+        remarks:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - projectId
+        - itemCategory
+        - itemName
+        - unit
+        - estimatedQuantity
+        - rate
+        - cost
+        - createdAt
+        - updatedAt
+
+    CreateEstimateRowRequest:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        itemCategory:
+          type: string
+          minLength: 1
+        itemName:
+          type: string
+          minLength: 1
+        specification:
+          type: string
+        unit:
+          type: string
+          minLength: 1
+        estimatedQuantity:
+          type: number
+          format: double
+          minimum: 0
+        rate:
+          type: number
+          format: double
+          minimum: 0
+        remarks:
+          type: string
+      required:
+        - projectId
+        - itemCategory
+        - itemName
+        - unit
+        - estimatedQuantity
+        - rate
+
+    ConsumptionEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        weekNumber:
+          type: integer
+        weekStart:
+          type: string
+          format: date
+        weekEnd:
+          type: string
+          format: date
+        itemName:
+          type: string
+        estimatedQty:
+          type: number
+          format: double
+        actualQty:
+          type: number
+          format: double
+        returnedQty:
+          type: number
+          format: double
+          description: Quantity returned after project completion
+        netQty:
+          type: number
+          format: double
+          description: actualQty minus returnedQty — the quantity consumed net of returns
+        variance:
+          type: number
+          format: double
+        variancePercent:
+          type: number
+          format: double
+        unitCost:
+          type: number
+          format: double
+        actualCost:
+          type: number
+          format: double
+        netCost:
+          type: number
+          format: double
+          description: netQty × unitCost — the accurate cost after accounting for returned material
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - projectId
+        - weekNumber
+        - weekStart
+        - weekEnd
+        - itemName
+        - estimatedQty
+        - actualQty
+        - returnedQty
+        - netQty
+        - variance
+        - variancePercent
+        - unitCost
+        - actualCost
+        - netCost
+        - createdAt
+        - updatedAt
+
+    CreateConsumptionEntryRequest:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        weekNumber:
+          type: integer
+        weekStart:
+          type: string
+          format: date
+        weekEnd:
+          type: string
+          format: date
+        itemName:
+          type: string
+          minLength: 1
+        estimatedQty:
+          type: number
+          format: double
+          minimum: 0
+        actualQty:
+          type: number
+          format: double
+          minimum: 0
+        returnedQty:
+          type: number
+          format: double
+          minimum: 0
+          description: Quantity returned at end of project
+        unitCost:
+          type: number
+          format: double
+          minimum: 0
+        notes:
+          type: string
+      required:
+        - projectId
+        - weekNumber
+        - weekStart
+        - weekEnd
+        - itemName
+        - estimatedQty
+        - actualQty
+        - returnedQty
+        - unitCost
+
+    MarginReport:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        projectName:
+          type: string
+        projectValue:
+          type: number
+          format: double
+        estimatedCost:
+          type: number
+          format: double
+        actualCost:
+          type: number
+          format: double
+        grossMargin:
+          type: number
+          format: double
+        marginPercent:
+          type: number
+          format: double
+        materialVariance:
+          type: number
+          format: double
+        labourVariance:
+          type: number
+          format: double
+        burnRate:
+          type: number
+          format: double
+        forecastAtCompletion:
+          type: number
+          format: double
+        categoryBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryBreakdownItem"
+        weeklyTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/WeeklyTrendPoint"
+      required:
+        - projectId
+        - projectName
+        - projectValue
+        - estimatedCost
+        - actualCost
+        - grossMargin
+        - marginPercent
+        - materialVariance
+        - labourVariance
+        - burnRate
+        - forecastAtCompletion
+        - categoryBreakdown
+        - weeklyTrend
+
+    WeeklyTrendPoint:
+      type: object
+      properties:
+        weekNumber:
+          type: integer
+        weekLabel:
+          type: string
+        estimatedCost:
+          type: number
+          format: double
+        actualCost:
+          type: number
+          format: double
+        cumulativeEstimated:
+          type: number
+          format: double
+        cumulativeActual:
+          type: number
+          format: double
+      required:
+        - weekNumber
+        - weekLabel
+        - estimatedCost
+        - actualCost
+        - cumulativeEstimated
+        - cumulativeActual
+
+    CategoryBreakdownItem:
+      type: object
+      properties:
+        category:
+          type: string
+        estimatedCost:
+          type: number
+          format: double
+        actualCost:
+          type: number
+          format: double
+        variance:
+          type: number
+          format: double
+        variancePercent:
+          type: number
+          format: double
+      required:
+        - category
+        - estimatedCost
+        - actualCost
+        - variance
+        - variancePercent
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalProjects:
+          type: integer
+        activeProjects:
+          type: integer
+        totalRevenue:
+          type: number
+          format: double
+        totalEstimatedCost:
+          type: number
+          format: double
+        totalActualCost:
+          type: number
+          format: double
+        overallMarginPercent:
+          type: number
+          format: double
+        projectsAtRisk:
+          type: integer
+        recentProjects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+      required:
+        - totalProjects
+        - activeProjects
+        - totalRevenue
+        - totalEstimatedCost
+        - totalActualCost
+        - overallMarginPercent
+        - projectsAtRisk
+        - recentProjects

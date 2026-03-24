@@ -1,0 +1,14 @@
+packages:
+  "recharts": "Required for dashboard and margin analysis charts"
+  "date-fns": "Required for formatting dates in tables and forms"
+  "react-hook-form": "Required for complex data entry forms"
+  "@hookform/resolvers": "Required for Zod validation with react-hook-form"
+
+images:
+  - path: "artifacts/interphase-dashboard/public/images/logo.png"
+    description: "Minimal geometric logo mark in deep professional blue on transparent background, suitable for an engineering and contracting company"
+    aspect_ratio: "1:1"
+
+notes:
+  - The app uses generated React Query hooks from @workspace/api-client-react
+  - A global state context manages the currently selected project across all pages
