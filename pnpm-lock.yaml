@@ -17,6 +17,12 @@ importers:
 
   backend:
     dependencies:
+      '@workspace/api-zod':
+        specifier: workspace:*
+        version: link:../lib/api-zod
+      '@workspace/db':
+        specifier: workspace:*
+        version: link:../lib/db
       cors:
         specifier: ^2.8.6
         version: 2.8.6

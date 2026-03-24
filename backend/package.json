@@ -15,10 +15,12 @@
     "typescript": "^6.0.2"
   },
   "dependencies": {
-    "cors": "^2.8.6",
-    "drizzle-orm": "^0.30.10",
-    "express": "^5.2.1",
-    "pino": "^10.3.1",
-    "pino-http": "^11.0.0"
-  }
+  "@workspace/api-zod": "workspace:*",
+  "@workspace/db": "workspace:*",
+  "cors": "^2.8.6",
+  "drizzle-orm": "^0.30.10",
+  "express": "^5.2.1",
+  "pino": "^10.3.1",
+  "pino-http": "^11.0.0"
+}
 }
