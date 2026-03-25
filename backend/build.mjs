@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { build as esbuild } from "esbuild";
 import { rm } from "node:fs/promises";
 
-// Ensure require works in ESM
+// Enable require in ESM
 globalThis.require = createRequire(import.meta.url);
 
 const artifactDir = path.dirname(fileURLToPath(import.meta.url));
@@ -22,27 +22,27 @@ async function buildAll() {
     format: "esm",
     outdir: distDir,
     outExtension: { ".js": ".mjs" },
-    logLevel: "info",
     sourcemap: "linked",
+    logLevel: "info",
 
-    // IMPORTANT: externalize runtime dependencies
+    // ✅ FIX: resolve monorepo packages manually
+    alias: {
+      "@workspace/db": path.resolve(artifactDir, "../lib/db/src"),
+      "@workspace/db/schema": path.resolve(artifactDir, "../lib/db/src/schema"),
+      "@workspace/api-zod": path.resolve(artifactDir, "../lib/api-zod/src")
+    },
+
+    // Only externalize native/runtime deps
     external: [
-      "express",
-  "cors",
-  "pino",
-  "pino-http",
-  "thread-stream",
-  "pino-pretty",
-  "drizzle-orm",
-  "@workspace/db",
-  "@workspace/db/*",
-  "@workspace/api-zod",
-  "*.node"
+      "*.node",
+      "pino-pretty",
+      "thread-stream"
     ],
 
-    // Fix for CJS packages inside ESM bundle
+    // Fix CJS compatibility inside ESM bundle
     banner: {
-      js: `import { createRequire as __bannerCrReq } from 'node:module';
+      js: `
+import { createRequire as __bannerCrReq } from 'node:module';
 import __bannerPath from 'node:path';
 import __bannerUrl from 'node:url';
 
