@@ -1,6 +1,7 @@
 {
   "name": "@workspace/api-server",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "build": "node ./build.mjs",
@@ -10,14 +11,13 @@
   "dependencies": {
     "express": "^5.2.1",
     "cors": "^2.8.6",
-    "drizzle-orm": "^0.30.10",
+    "drizzle-orm": "^0.36.4",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
-    "@workspace/api-zod": "workspace:*"
+    "thread-stream": "^2.4.1"
   },
   "devDependencies": {
     "esbuild": "^0.27.4",
-    "esbuild-plugin-pino": "^2.3.3",
     "tsx": "4.7.0",
     "typescript": "^5.9.2"
   }
