@@ -1,12 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "lib": ["dom", "es2022"]
+    "declaration": true,
+    "emitDeclarationOnly": false,
+
+    // ✅ ADD THIS
+    "lib": ["ESNext", "DOM"]
   },
   "include": ["src"]
 }
