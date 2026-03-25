@@ -6,15 +6,19 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./schema": "./dist/schema/index.js"
   },
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {
-    "drizzle-orm": "^0.36.0",
+    "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
     "pg": "^8.11.5",
     "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
   }
 }
