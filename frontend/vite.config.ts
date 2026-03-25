@@ -24,7 +24,22 @@ export default defineConfig(async () => ({
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
       "@assets": path.resolve(import.meta.dirname, "..", "..", "attached_assets"),
+
+      // ✅ CRITICAL FIXES (workspace packages)
+      "@workspace/api-client-react": path.resolve(
+        import.meta.dirname,
+        "../lib/api-client-react/src"
+      ),
+      "@workspace/db": path.resolve(
+        import.meta.dirname,
+        "../lib/db/src"
+      ),
+      "@workspace/api-zod": path.resolve(
+        import.meta.dirname,
+        "../lib/api-zod/src"
+      ),
     },
+
     dedupe: ["react", "react-dom"],
   },
 
@@ -35,7 +50,6 @@ export default defineConfig(async () => ({
     emptyOutDir: true,
   },
 
-  // SAFE LOCAL DEV ONLY
   server: {
     port: 5173,
     host: "0.0.0.0",
